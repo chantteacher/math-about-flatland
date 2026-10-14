@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flatland 탐구 코치</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f0e3;--grid:#eadfca;--ink:#3b2f2a;--sub:#7a6558;--paper:#fffaf0;--line:#e0d3bd;--acc:#a65406;--onacc:#fff;--note:#ffe9b0;--noteink:#6b4300;--ok:#2f7d3e;--bad:#b53a1a;--chip:#f0e3cb;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241c17;--grid:#2f251e;--ink:#f3e8d8;--sub:#c4b09a;--paper:#2e241d;--line:#4a3b30;--acc:#f0a64c;--onacc:#2a1c0c;--note:#4a3a18;--noteink:#f6d98b;--ok:#7fd18a;--bad:#ff9c7a;--chip:#3b2e24}}
+:root[data-theme="dark"]{--bg:#241c17;--grid:#2f251e;--ink:#f3e8d8;--sub:#c4b09a;--paper:#2e241d;--line:#4a3b30;--acc:#f0a64c;--onacc:#2a1c0c;--note:#4a3a18;--noteink:#f6d98b;--ok:#7fd18a;--bad:#ff9c7a;--chip:#3b2e24}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;letter-spacing:.01em;background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:16px/1.65 "Gowun Dodum","Noto Sans KR",system-ui,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+h1,h2,h3{font-family:"Gowun Batang",serif;margin:0}
+h1{font-size:1.9rem;line-height:1.3}
+.lead{color:var(--sub);margin:6px 0 16px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--line)}
+nav button{flex:none;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 14px;border-radius:999px;font:inherit;font-size:.9rem;cursor:pointer}
+nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav button.done::after{content:" ✓";color:var(--ok)}
+nav button.on.done::after{color:var(--bg)}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.sec{margin-top:22px}
+.tip{background:var(--paper);border:1px dashed var(--acc);padding:12px 14px;border-radius:6px;font-size:.95rem;margin:12px 0}
+.fld{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;margin:18px 0}
+.fld h3{font-size:1.15rem}
+.q{margin:4px 0 10px;color:var(--sub);font-size:.95rem}
+textarea{width:100%;min-height:150px;resize:vertical;border:1px solid var(--line);border-radius:4px;padding:6px 10px;font:inherit;color:var(--ink);line-height:2rem;background:var(--paper) repeating-linear-gradient(transparent,transparent calc(2rem - 1px),var(--line) calc(2rem - 1px),var(--line) 2rem);background-attachment:local}
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.bar button,.btn{border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:5px 11px;border-radius:5px;font:inherit;font-size:.85rem;cursor:pointer}
+.btn.pri{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700;padding:9px 18px;font-size:.95rem}
+.hint{background:var(--note);color:var(--noteink);padding:9px 12px;border-radius:4px;margin:6px 0;font-size:.93rem}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0 2px}
+.chips span{font-size:.8rem;padding:2px 9px;border-radius:999px;background:var(--chip);color:var(--sub)}
+.chips span.hit{background:var(--acc);color:var(--onacc)}
+.msg{font-size:.88rem;color:var(--sub);margin-top:4px}
+.msg b{color:var(--ok)}
+.w{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px;margin:14px 0}
+.w svg{width:100%;max-width:520px;display:block;margin:0 auto}
+.w input[type=range]{width:100%}
+.lab{text-align:center;font-weight:700;font-family:"Gowun Batang",serif;font-size:1.1rem;margin-top:4px}
+.topics label{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:5px;margin:6px 0;cursor:pointer;font-size:.93rem}
+.topics input{margin-right:8px}
+.topics label.on{border-color:var(--acc);background:var(--chip)}
+table.r{width:100%;border-collapse:collapse;margin:8px 0}
+table.r td,table.r th{border:1px solid var(--line);padding:6px 8px;vertical-align:top;font-size:.93rem}
+.rep{background:#fffdf8;color:#2b211c;padding:28px;border:1px solid #bbb;border-radius:4px;font-family:"Gowun Batang",serif;line-height:1.85}
+.rep h2{font-size:1.4rem;border-bottom:2px solid #8a4b0f;padding-bottom:6px;margin-bottom:12px}
+.rep h3{font-size:1.05rem;margin:18px 0 4px}
+.rep .qq{font-family:"Gowun Dodum",sans-serif;font-size:.82rem;color:#555;margin:0 0 4px}
+.rep p{margin:0 0 6px;white-space:pre-wrap}
+.empty{color:#a33}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;align-items:center}
+.name input{border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 9px;border-radius:4px;font:inherit;width:140px}
+.sess{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:8px 0;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.sess i{display:block;font-style:normal;color:var(--sub);font-size:.72rem}.sess b{font-size:.98rem}
+.sess input{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 9px;border-radius:4px;font:inherit;width:130px}
+.nocopy{-webkit-user-select:none;user-select:none}
+.locked{opacity:.4;pointer-events:none;user-select:none}
+.mk{display:flex;gap:5px;flex-wrap:wrap;background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:8px;margin:6px 0}
+.mk button{min-width:38px;height:36px;padding:0 8px;border:1px solid var(--line);border-radius:5px;background:var(--paper);color:var(--ink);font:inherit;font-size:1.02rem;cursor:pointer}
+.mk button:active{background:var(--acc);color:var(--onacc)}
+.mk .sp{flex-basis:100%;height:0}
+@media print{body{background:#fff}nav,.sess,.row,.lead,h1,.noprint{display:none!important}.rep{border:0;padding:0}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ===== 여기만 고치세요: Firebase 콘솔 > 프로젝트 설정 > 내 앱(웹)의 설정값 ===== */
+window.FIREBASE_CONFIG={apiKey:"AIzaSyCX_OxDby84Gh89_vteAEHJJ2JbdHsjpTM",authDomain:"flatland-dimension-lab-58cca.firebaseapp.com",projectId:"flatland-dimension-lab-58cca",storageBucket:"flatland-dimension-lab-58cca.firebasestorage.app",messagingSenderId:"912781985063",appId:"1:912781985063:web:34c0e8e72b800d90819502"};
+window.TEACHER_EMAIL="teacher@flatland-lab.com"; /* 교사 계정 이메일(비밀번호는 코드에 없음) */
+/* ================================================================== */
+</script>
+<script type="module" onerror="window.__fbErr='firebase-not-loaded'">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInAnonymously,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,setDoc,deleteDoc,collection,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+try{const app=initializeApp(window.FIREBASE_CONFIG),auth=getAuth(app),db=getFirestore(app);
+window.__fb={auth,db,doc,setDoc,deleteDoc,collection,getDocs,signInAnonymously,signInWithEmailAndPassword,signOut};
+signInAnonymously(auth).catch(e=>{window.__fbErr=e.code||String(e)})}catch(e){window.__fbErr=e.code||String(e)}
+</script>
+</head>
+<body>
+<div class="wrap">
+<div class="row" style="justify-content:flex-end;margin:0"><span id="tp"></span><button class="btn" id="tch">교사 모드</button></div>
+<h1>Flatland 탐구 코치</h1>
+<p class="lead">답을 대신 써 주지 않아요. 힌트를 한 단계씩 열고, 핵심 용어와 논리 연결을 채우면 보고서 문장이 완성됩니다.</p>
+<div class="sess" id="sess"></div>
+<div class="hint" id="endbox" hidden></div>
+<nav id="nav" aria-label="활동 단계"></nav>
+<main id="main"></main>
+</div>
+<script>
+const QTXT={
+q1:"원뿔을 자르는 평면의 기울기를 바꾸면 단면이 원→타원→포물선→쌍곡선으로 변한다. 이를 ‘구가 플랫랜드를 통과하며 원의 크기가 변하는 장면’과 비교하여 공통점과 차이점을 서술하시오.",
+q2a:"x²+y²+z²=r²에 z=k를 대입하여 단면의 방정식을 구하고, 단면이 어떤 도형이며 반지름이 k에 따라 어떻게 변하는지 쓰시오. (|k|&lt;r)",
+q2b:"|k|>r일 때 단면이 존재하지 않는 것은 영화의 어떤 장면에 해당하는지 서술하시오."};
+const F={
+dimL1:{t:"라인랜드(1차원) · 인식 가능한 것",q:"축이 1개뿐인 세계에서 마주칠 수 있는 것은?",min:20,kw:["1개","직선","점","선분","앞","뒤","길이","거리"],h:["움직일 수 있는 방향이 몇 가지인지 세어 보자.","한 줄 위에서는 앞·뒤 두 방향뿐이라 이웃의 가까운 쪽 끝만 보인다. 상대가 선분이어도 점으로 인식된다.","‘점으로 인식 / 앞뒤 방향 / 이웃과의 거리·순서’를 넣어 한 문장으로 써 보자. 길이를 알 수 없다는 점도 좋아요."]},
+dimL2:{t:"라인랜드 · 인식 불가능한 것",q:"선 위의 존재에게 아예 없는 개념은?",min:20,kw:["두 번째","폭","넓이","2차원","축","밖"],h:["직선에 없는 방향은 무엇일까? 옆 방향이다.","옆 방향이 없으면 ‘폭’이나 ‘넓이’라는 개념도 만들 수 없다.","‘두 번째 축이 없기 때문에 ~를 인식할 수 없다’ 형태로 이유(축의 개수)를 붙이자."]},
+dimF1:{t:"플랫랜드(2차원) · 인식 가능한 것",q:"x축·y축 두 개가 있는 세계에서는?",min:20,kw:["평면","2개","원","다각형","변","넓이","좌우","앞뒤"],h:["축이 2개면 방향은 앞뒤+좌우. 어떤 도형이 존재할 수 있을까?","플랫랜드 주민은 평면 안에서 이웃을 본다. 이웃 도형은 어떻게 보일까?","‘평면, 축 2개, 도형의 변·넓이’를 포함하고, 도형이 ‘선분처럼’ 보인다는 점도 넣어 보자."]},
+dimF2:{t:"플랫랜드 · 인식 불가능한 것",q:"평면 세계에 없는 방향은?",min:20,kw:["위","아래","높이","z축","3차원","단면","입체"],h:["x, y 말고 또 하나의 방향이 있다면?","‘위·아래(높이)’ 방향을 모르니 입체의 전체 모습을 알 수 없다.","‘세 번째 축(z축)이 없어서 ~를 인식 못 한다. 대신 ~만 본다’ 로 단면과 연결하자."]},
+dimS1:{t:"스페이스랜드(3차원) · 인식 가능한 것",q:"x, y, z 세 축이 있는 세계에서는?",min:20,kw:["3차원","공간","z축","입체","구","부피","높이","평면"],h:["축이 3개면 도형은 어떻게 달라질까? 점·선·면 다음 단계는?","입체(구, 정육면체 등)와 부피를 인식한다. 2차원 세계를 ‘위에서’ 내려다볼 수도 있다.","‘3차원, 입체·부피, 하위 차원 세계를 한눈에 봄’을 넣어 보자."]},
+dimS2:{t:"스페이스랜드 · 인식 불가능한 것",q:"3차원 존재가 느끼지 못하는 것은?",min:20,kw:["4차원","네 번째","w","상상","감각","축"],h:["플랫랜드가 ‘세 번째 축’을 못 보듯, 우리가 못 보는 것은?","네 번째 축 방향과 4차원 도형의 전체 모습이다.","‘네 번째 축이 없으므로 ~를 직접 감각할 수 없다’ 로 앞의 패턴을 반복해 보자."]},
+q1:{t:"QUIZ 1 · 단면 비교",q:QTXT.q1,min:120,kw:["단면","평면","원뿔","구","원","타원","포물선","쌍곡선","기울기","크기","공통","차이"],h:["공통점부터: 둘 다 ‘고차원 도형을 평면으로 자른 단면’을 본다.","차이점 찾기: 구 장면에서는 평면의 ‘무엇’이 바뀌고 ‘무엇’이 변할까? 원뿔은? (위치 vs 기울기, 크기 vs 종류)","뼈대: 공통(단면) → 차이①(바뀌는 조건) → 차이②(결과) → 한 줄 결론. 위 슬라이더로 직접 확인한 뒤 써 보자."]},
+q2a:{t:"QUIZ 2-1 · 단면의 방정식",q:QTXT.q2a,min:60,kw:["원","반지름","√","r²","k²","중심","최대","0","z=k"],h:["대입하면 z² 자리에 k²이 들어간다. 식이 어떻게 바뀔까?","x²+y² = (r²−k²) 꼴이 된다. 이 꼴은 어떤 도형의 방정식일까? 중심 좌표도 확인해 보자.","k=0일 때와 |k|가 r에 가까워질 때 반지름을 각각 직접 계산해 보자. 슬라이더로 검산!"]},
+q2b:{t:"QUIZ 2-2 · 단면이 없는 경우",q:QTXT.q2b,min:60,kw:["단면","없","만나지","인식","사라","통과","지나","플랫랜드"],h:["|k|>r이면 r²−k²의 부호는?","x, y가 실수일 때 x²+y²가 음수가 될 수 있을까? 그렇다면 평면과 구는?","구가 평면에 닿기 전, 또는 완전히 통과한 뒤 플랫랜드 주민이 보는 것은? 영화 장면과 연결하자."]}
+};
+const T=[
+{t:"1) 점의 왕에게 설명 실패",q:"정사각형이 포인트랜드의 왕에게 2차원 세계를 설명하지 못한 이유를 수학적 개념(정보량, 축의 차이)으로 설명하라.",kw:["정보량","축","0차원","2차원","좌표","점","설명","인식","소통"],h:["점의 왕이 가진 좌표(축)는 몇 개일까?","‘넓이’, ‘옆’ 같은 말은 축이 0개인 세계에 정의된 개념일까?","정보량(필요 좌표 0 vs 2) → 개념 공유 불가 → 설득 실패 순서로 쓰고, 4차원 설명과의 유사성으로 확장하자."]},
+{t:"2) 변의 수로 나뉘는 신분",q:"변의 수에 따라 신분이 나뉘는 설정이 기하학적 규칙성과 사회 풍자를 어떻게 결합하는지 설명하라.",kw:["변의 수","계급","정다각형","원","풍자","위계","규칙","차별","사회"],h:["변의 수는 수학적으로 객관적으로 셀 수 있다. 그 성질이 신분 기준이 되면?","객관적 규칙이 차별을 ‘자연스럽게’ 보이게 만드는 점을 생각해 보자.","‘기하의 정확성 ↔ 차별의 정당화’ 한 쌍을 중심으로 현실 사례 하나를 연결하자."]},
+{t:"3) 4차원은 왜 상상이 어려울까",q:"우리가 4차원을 수학적으로는 다루지만 감각적으로는 상상하기 어려운 이유를 좌표축의 개수 관점에서 설명하라.",kw:["좌표축","4개","3개","w","감각","상상","수식","단면","투영","차원"],h:["우리 몸이 경험한 독립 방향은 몇 개일까?","수학은 (x,y,z,w)처럼 좌표 하나만 더 쓰면 되지만, w 방향은 경험한 적이 없다.","플랫랜드 주민이 구를 단면으로만 알듯, 우리는 4차원을 3차원 단면·투영으로만 접근한다는 점과 연결하자."]}];
+const TQ=["1) 정사각형이 포인트랜드의 왕(점)에게 자신의 2차원 세계를 설명하려 했지만 실패했던 장면이 있다. 이는 ‘더 높은 차원의 존재가 낮은 차원의 존재를 설득하는 것’의 어려움을 보여준다. 이러한 소통의 어려움을 수학적 개념(정보량, 축의 차이)으로 설명해 보자.","2) 플랫랜드 사회는 도형의 변의 수(계급)에 따라 신분이 나뉘는 위계 사회로 그려진다. 이러한 설정이 기하학적 규칙성과 사회 풍자를 어떻게 결합하고 있는지 자신의 의견을 구체적으로 설명해보자.","3) 우리가 3차원 공간에 살면서 4차원을 ‘수학적으로는’ 다룰 수 있지만 ‘감각적으로는’ 상상하기 어려운 이유를, 좌표축의 개수 관점에서 설명해보자."];
+const STEPS=[{k:"dim",t:"차원 정리",f:["dimL1","dimL2","dimF1","dimF2","dimS1","dimS2"]},{k:"q1",t:"QUIZ 1",f:["q1"]},{k:"q2",t:"QUIZ 2",f:["q2a","q2b"]},{k:"q3",t:"QUIZ 3",f:["q3"]},{k:"rep",t:"보고서 완성"}];
+const ST=["먼저, ","그 이유는 ","즉, ","이는 영화에서 ~ 장면과 같다. ","따라서 "];
+const CONN=/때문|따라서|즉|그러므로|왜냐하면|그래서|반면|하지만/;
+let st={a:{},step:0,topic:0,name:"",sid:"",sess:null,hl:{}};
+try{const s=localStorage.getItem("flat-coach");if(s)st=Object.assign(st,JSON.parse(s))}catch(e){}
+const save=()=>{try{localStorage.setItem("flat-coach",JSON.stringify(st))}catch(e){}};
+const $=s=>document.querySelector(s);
+const norm=s=>(s||"").toLowerCase().replace(/\^2/g,"²").replace(/sqrt/g,"√").replace(/\s/g,"");
+const fd=id=>id==="q3"?Object.assign({min:150},T[st.topic]):F[id];
+function res(id){const d=fd(id),tx=st.a[id]||"",n=norm(tx),hits=d.kw.filter(k=>n.includes(norm(k)));
+ const len=tx.replace(/\s/g,"").length;return{d,len,hits,conn:CONN.test(tx),ok:len>=d.min&&hits.length>=2&&(d.min<60||CONN.test(tx))&&!(id==="q3"&&copied())}}
+function fb(id){const r=res(id),el=$("#fb-"+id);if(!el)return;
+ let m;if(id==="q3"&&copied())m="힌트·예시와 같은 문장이 있어요. 내 표현으로 고쳐 써야 인정돼요.";else if(r.len<r.d.min*.5)m="이제 막 시작! 힌트를 열고 한 문장부터 써 보자.";
+ else if(r.hits.length<2)m="핵심 용어가 부족해요. 아래 칩 중 2개 이상 넣어 보자.";
+ else if(r.d.min>=60&&!r.conn)m="용어는 좋아요. ‘때문에/따라서/즉’으로 이유와 결론을 이어 보자.";
+ else if(r.len<r.d.min)m="거의 다 왔어요. 근거를 한 문장 더 보태 보자.";
+ else m="<b>✓ 보고서에 넣을 만해요.</b> 마지막으로 결론 문장이 있는지 확인!";
+ el.innerHTML=`<div class="chips">${r.d.kw.map(k=>`<span class="${r.hits.includes(k)?"hit":""}">${k}</span>`).join("")}</div><div class="msg">${r.len}자 · 용어 ${r.hits.length}/${r.d.kw.length} · 논리 연결어 ${r.conn?"✓":"—"} · ${m}</div>`;
+ const b=document.querySelectorAll("nav button")[st.step];renderNavDone()}
+function hintHtml(id){const lv=st.hl[id]||0,d=fd(id);
+ return d.h.slice(0,lv).map((h,i)=>`<div class="hint nocopy"><b>힌트 ${i+1}</b> ${h}</div>`).join("")+
+ (lv<3?`<button class="btn" data-hint="${id}">${lv===0?"힌트 보기":"힌트 "+(lv+1)+" 더 보기"}</button>`:"")}
+function fld(id){const d=fd(id);
+ return `<section class="fld" data-f="${id}"><h3>${d.t}</h3><p class="q">${d.q}</p><div id="h-${id}">${hintHtml(id)}</div>
+ <div class="bar" aria-label="문장 시작 도우미">${MT(id)}${ST.map(s=>`<button data-st="${id}" data-s="${s}">${s.trim()}</button>`).join("")}</div>${MP(id)}
+ <textarea id="t-${id}" data-t="${id}" aria-label="${d.t}" placeholder="내 생각을 써 보자">${st.a[id]||""}</textarea><div id="fb-${id}"></div></section>`}
+function isDone(s){return s.f&&s.f.every(f=>res(f).ok)}
+function renderNavDone(){document.querySelectorAll("nav button").forEach((b,i)=>b.classList.toggle("done",!!isDone(STEPS[i])))}
+function nav(){$("#nav").innerHTML=STEPS.map((s,i)=>`<button data-n="${i}" class="${i===st.step?"on":""}">${s.t}</button>`).join("");renderNavDone()}
+const CONE=`<div class="w"><b>실험 · 평면의 기울기를 바꾸고, 그림을 끌어서 돌려 보자</b><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><canvas id="c3" width="340" height="300" style="flex:1 1 220px;max-width:340px;touch-action:none;cursor:grab" aria-label="원뿔과 자르는 평면. 끌어서 돌려 볼 수 있어요"></canvas><svg viewBox="0 0 300 200" id="cs" style="flex:1 1 220px;max-width:300px" aria-label="단면 도형"></svg></div><div class="lab" id="cl"></div><label>평면과 축이 이루는 각 <b id="cv"></b>°<input type="range" id="cr" min="15" max="90" value="90"></label></div>`;
+const SPH=`<div class="w"><b>실험 · 구(r=5)를 z=k 평면으로 자르고, 그림을 끌어서 돌려 보자</b><canvas id="s3" width="340" height="280" style="width:100%;max-width:340px;display:block;margin:0 auto;touch-action:none;cursor:grab" aria-label="구와 평면. 끌어서 돌려 볼 수 있어요"></canvas><svg viewBox="0 0 320 194" id="ss" aria-label="구의 단면"></svg><div class="msg" style="text-align:center;margin-top:10px"><b>플랫랜드 주민이 보는 모습</b> (1차원 시야 · 점선 칸은 가장 길 때의 크기)</div><svg viewBox="0 0 320 46" id="v1" aria-label="주민 시야"></svg><div class="lab" id="v1t"></div><div class="bar" style="justify-content:center"><button class="btn pri" id="spp">▶ 구가 통과하는 장면 재생</button></div><div class="lab" id="sl"></div><label>k = <b id="sv"></b><input type="range" id="sr" min="-6" max="6" step="0.1" value="0"></label></div>`;
+function conic(){const b=+$("#cr").value,al=35,e=Math.cos(b*Math.PI/180)/Math.cos(al*Math.PI/180);let name,a=70,l,sx=150;
+ if(b>=89.5){name="원";e0=0}else if(Math.abs(b-al)<1){name="포물선"}else if(b>al)name="타원";else name="쌍곡선";
+ const E=b>=89.5?0:Math.abs(b-al)<1?1:e;
+ if(E<1){l=a*(1-E*E);sx=150+a*E}else if(E===1){l=34;sx=215}else{a=40;l=a*(E*E-1);sx=150-a*E}
+ let p=[[],[]];for(let i=0;i<=720;i++){const f=i/720*2*Math.PI,d=1+E*Math.cos(f);if(Math.abs(d)<.03)continue;const r=l/d,x=sx+r*Math.cos(f),y=100-r*Math.sin(f);if(Math.abs(x)>1500||Math.abs(y)>1500)continue;p[d>0?0:1].push((p[d>0?0:1].length?"L":"M")+x.toFixed(1)+" "+y.toFixed(1))}
+ $("#cs").innerHTML=`<line x1="0" y1="100" x2="300" y2="100" stroke="var(--line)"/><line x1="150" y1="0" x2="150" y2="200" stroke="var(--line)"/>`+p.map(s=>`<path d="${s.join("")}${E<1?"Z":""}" fill="${E<1?"var(--chip)":"none"}" stroke="var(--acc)" stroke-width="3"/>`).join("");
+ $("#cv").textContent=b;drawCone(b);$("#cl").textContent="단면: "+name}
+let pk=0,spT=0;
+function v1(k,v){const ak=Math.abs(k),pa=Math.abs(pk);pk=k;let b=`<rect x="20" y="8" width="280" height="30" rx="4" fill="none" stroke="var(--line)" stroke-dasharray="4 3"/><line x1="160" y1="4" x2="160" y2="42" stroke="var(--line)"/>`,t;
+ if(v<-1e-9){t="아무것도 보이지 않아요 (단면 없음)"}
+ else if(Math.abs(v)<.005){b+=`<circle cx="160" cy="23" r="6" fill="var(--bad)"/>`;t="점 하나 (구가 막 닿았거나 막 떠났어요)"}
+ else{const w=Math.max(2*Math.sqrt(v)*28,6);b+=`<rect x="${160-w/2}" y="14" width="${w}" height="18" rx="3" fill="var(--bad)"/>`;t="선분 · 길이 "+(2*Math.sqrt(v)).toFixed(1)+" "+(ak<.05?"(가장 길어요)":ak<pa?"▲ 길어지는 중":ak>pa?"▼ 짧아지는 중":"")}
+ $("#v1").innerHTML=b;$("#v1t").textContent=t}
+function spPlay(){const bt=$("#spp");if(spT){clearInterval(spT);spT=0;bt.textContent="▶ 구가 통과하는 장면 재생";return}let k=-6;bt.textContent="⏸ 멈추기";spT=setInterval(()=>{const r=$("#sr");if(!r){clearInterval(spT);spT=0;return}k=Math.round((k+.1)*100)/100;if(k>6){clearInterval(spT);spT=0;$("#spp").textContent="▶ 다시 재생";return}r.value=k;sph()},60)}
+function sph(){const k=+$("#sr").value,r=5,v=r*r-k*k,u=14;$("#sv").textContent=k.toFixed(1);
+ let s=`<circle cx="80" cy="90" r="70" fill="none" stroke="var(--ink)" stroke-width="2"/><line x1="0" y1="${90-k*u}" x2="160" y2="${90-k*u}" stroke="var(--bad)" stroke-width="2"/><text x="6" y="${86-k*u}" font-size="11" fill="var(--bad)">z=k</text><text x="80" y="178" text-anchor="middle" font-size="11" fill="var(--sub)">옆에서 본 모습</text><text x="245" y="172" text-anchor="middle" font-size="11" fill="var(--sub)">평면에 생긴 단면</text><text x="245" y="186" text-anchor="middle" font-size="11" fill="var(--sub)">(위에서 본 모습)</text>`;
+ if(v>=0){s+=`<circle cx="245" cy="90" r="${Math.max(u*Math.sqrt(v),1.5)}" fill="var(--chip)" stroke="var(--acc)" stroke-width="3"/>`;$("#sl").textContent="r² − k² = "+v.toFixed(2)+" → 반지름 ≈ "+Math.sqrt(v).toFixed(2)}
+ else $("#sl").textContent="r² − k² = "+v.toFixed(2)+" < 0 → 단면 없음";
+ $("#ss").innerHTML=s;drawSph(k);v1(k,v)}
+const esc=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function render(){nav();const s=STEPS[st.step];let h="";
+ if(s.k==="dim")h=DIMW+`<div class="tip"><b>핵심 열쇠:</b> 차원 = 움직일 수 있는 독립된 방향(축)의 개수. 각 세계에 ‘있는 축’과 ‘없는 축’을 비교하면 표가 저절로 채워져요. 포인트랜드는 이미 활동지에 예시가 있어요.</div>`+s.f.map(fld).join("");
+ if(s.k==="q1")h=`<div class="tip">두 상황 모두 ‘고차원 도형 + 평면 = 단면’이에요. 달라지는 건 <b>평면을 어떻게 바꾸느냐</b>입니다.</div>`+CONE+fld("q1");
+ if(s.k==="q2")h=`<div class="tip">대입 → 정리 → 해석(어떤 도형? 크기는?) 순서로. 슬라이더로 숫자를 확인한 뒤 식으로 써 보세요. 수식 기호는 <b>🧮 공학용 키보드</b>로 입력할 수 있어요.</div>`+SPH+s.f.map(fld).join("");
+ if(s.k==="q3")h=`<div class="tip">한 가지만 고르세요. 의견 글은 <b>주장 → 근거(수학 개념) → 영화 장면 → 나의 생각</b> 순서가 탄탄해요.</div><div class="topics">${T.map((t,i)=>`<label class="${i===st.topic?"on":""}"><input type="radio" name="tp" value="${i}" ${i===st.topic?"checked":""}>${TQ[i]}</label>`).join("")}</div>`+AXW+wzHtml()+fld("q3");
+ if(s.k==="rep"){const miss=STEPS.slice(0,4).filter(x=>!isDone(x)).map(x=>x.t);
+  h=`<div class="tip">${miss.length?"보완하면 좋은 단계: <b>"+miss.join(", ")+"</b>. 아래 보고서는 지금 쓴 내용으로 자동 조립됩니다.":"모든 단계가 기준을 넘었어요! 마지막으로 소리 내어 읽으며 어색한 문장을 다듬어 보세요."}</div>
+  <div class="row"><button class="btn pri" id="cp">보고서 복사</button><button class="btn pri" id="pd">PDF 다운로드</button><button class="btn" id="pr">인쇄</button><button class="btn pri" id="sb">최종 보고서 제출</button></div><p class="msg" id="sst">${subMsg()}</p><div id="repbox">${repHtml()}</div><p class="msg noprint">수정은 각 단계로 돌아가서 하면 보고서에 바로 반영돼요.</p>`}
+ $("#main").innerHTML=h;$("#main").classList.toggle("locked",!st.sess);if(s.k==="dim")dimDraw(st.dw||0);if(s.k==="q3"){$("#ar").oninput=axDraw;axDraw()}
+ if(s.k==="q1"){$("#cr").oninput=conic;conic()}
+ if(s.k==="q2"){if(spT){clearInterval(spT);spT=0}pk=0;$("#sr").oninput=sph;$("#spp").onclick=spPlay;sph()}
+ (s.f||[]).forEach(f=>fb(f));
+ if(s.k==="rep"){
+  $("#pr").onclick=()=>window.print();$("#pd").onclick=stuPdf;$("#sb").onclick=submit;
+  $("#cp").onclick=async()=>{const t=$("#rep").innerText;try{await navigator.clipboard.writeText(t);$("#cp").textContent="복사됨!"}catch(e){const r=document.createRange();r.selectNodeContents($("#rep"));const se=getSelection();se.removeAllRanges();se.addRange(r);$("#cp").textContent="선택됨: 길게 눌러 복사"}}}
+}
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset.n){st.step=+t.dataset.n;save();render();window.scrollTo(0,0)}
+ if(t.dataset.hint){const id=t.dataset.hint;st.hl[id]=(st.hl[id]||0)+1;save();$("#h-"+id).innerHTML=hintHtml(id)}
+ if(t.dataset.st){const id=t.dataset.st,ta=$("#t-"+id),p=ta.selectionStart;ta.value=ta.value.slice(0,p)+t.dataset.s+ta.value.slice(ta.selectionEnd);ta.focus();ta.selectionStart=ta.selectionEnd=p+t.dataset.s.length;ta.dispatchEvent(new Event("input",{bubbles:true}))}});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset.t){st.a[t.dataset.t]=t.value;save();fb(t.dataset.t)}});
+document.addEventListener("change",e=>{if(e.target.name==="tp"){st.topic=+e.target.value;save();render()}});
+
+const DIMW=`<div class="w"><b>그림으로 보는 차원</b><div class="bar" id="db">${["포인트랜드","라인랜드","플랫랜드","스페이스랜드"].map((n,i)=>`<button onclick="dimDraw(${i})">${n}</button>`).join("")}</div><div id="dst"></div><div class="lab" id="dcp"></div></div>`;
+const AXW=`<div class="w"><b>그림으로 보는 좌표축</b><svg viewBox="0 0 320 170" id="av" aria-label="좌표축"></svg><div class="lab" id="ac"></div><label>축의 개수 n = <b id="an"></b><input type="range" id="ar" min="1" max="4" value="3"></label></div>`;
+const tx=(x,y,t,c="var(--sub)",a="middle")=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="12" fill="${c}">${t}</text>`;
+const DD=[["축 0개: 점 하나뿐. 방향도 이동도 없다.",tx(160,120,"나는 점. 움직일 방향이 없다")+`<circle cx="160" cy="80" r="7" fill="var(--acc)"/>`],
+["축 1개: 앞·뒤로만 움직이고, 이웃은 가까운 쪽 끝만 보여 모두 점으로 인식된다.",`<line x1="20" y1="80" x2="300" y2="80" stroke="var(--ink)" stroke-width="2"/><circle cx="70" cy="80" r="6" fill="var(--bad)"/><line x1="130" y1="80" x2="190" y2="80" stroke="var(--acc)" stroke-width="7"/><circle cx="250" cy="80" r="6" fill="var(--bad)"/>`+tx(290,68,"x")+tx(160,125,"옆(폭) 방향은 존재하지 않는다")],
+["축 2개: 도형이 있지만 주민 눈에는 이웃이 선분으로 보인다.",`<line x1="20" y1="60" x2="300" y2="60" stroke="var(--line)"/><line x1="40" y1="10" x2="40" y2="110" stroke="var(--line)"/><polygon points="80,30 120,30 100,70" fill="var(--chip)" stroke="var(--ink)" stroke-width="2"/><rect x="150" y="30" width="40" height="40" fill="var(--chip)" stroke="var(--ink)" stroke-width="2"/><circle cx="250" cy="50" r="22" fill="var(--chip)" stroke="var(--ink)" stroke-width="2"/>`+tx(290,54,"x")+tx(52,18,"y","var(--sub)","start")+`<line x1="80" y1="145" x2="120" y2="145" stroke="var(--acc)" stroke-width="6"/><line x1="150" y1="145" x2="190" y2="145" stroke="var(--acc)" stroke-width="6"/><line x1="228" y1="145" x2="272" y2="145" stroke="var(--acc)" stroke-width="6"/>`+tx(160,165,"주민이 실제로 보는 모습: 선분")],
+["축 3개: 입체를 한눈에 보고, 평면 세계를 위에서 내려다본다.",`<line x1="100" y1="130" x2="260" y2="130" stroke="var(--line)"/><line x1="100" y1="130" x2="100" y2="10" stroke="var(--line)"/><line x1="100" y1="130" x2="40" y2="160" stroke="var(--line)"/><circle cx="170" cy="75" r="45" fill="var(--chip)" stroke="var(--ink)" stroke-width="2"/><ellipse cx="170" cy="75" rx="45" ry="13" fill="none" stroke="var(--acc)" stroke-width="2.5"/>`+tx(262,125,"y")+tx(108,16,"z","var(--sub)","start")+tx(40,155,"x")+tx(250,40,"초록 원 = 단면","var(--acc)")]];
+function axDraw(){const n=+$("#ar").value;$("#an").textContent=n;const A=[[280,130,"x"],[40,20,"y"],[125,80,"z"],[245,40,"w"]];
+ $("#av").innerHTML=A.slice(0,n).map((a,i)=>`<line x1="40" y1="130" x2="${a[0]}" y2="${a[1]}" stroke="${i==3?"var(--bad)":"var(--ink)"}" stroke-width="2.5" ${i==3?'stroke-dasharray="6 5"':""}/>`+tx(a[0]+(i==1?8:-2),a[1]-6,a[2]+(i==3?" ?":""),i==3?"var(--bad)":"var(--ink)")).join("");
+ $("#ac").textContent=["축 1개 = 직선","축 2개 = 평면","축 3개 = 공간 (우리 감각의 한계)","축 4개 = (x,y,z,w) 식은 쓰지만 w 방향은 경험할 수 없다"][n-1]}
+function cone(b){const t=b*Math.PI/180,dx=Math.sin(t)*75,dy=Math.cos(t)*75;return `<g stroke="var(--ink)" stroke-width="2" fill="var(--chip)"><path d="M85 100L15 0H155Z"/><path d="M85 100L15 200H155Z"/></g><line x1="85" y1="0" x2="85" y2="200" stroke="var(--line)" stroke-dasharray="4"/><line x1="${85-dx}" y1="${130+dy}" x2="${85+dx}" y2="${130-dy}" stroke="var(--bad)" stroke-width="3.5"/>`+tx(85,14,"자르는 평면(빨강)","var(--bad)")}
+const fmt=ms=>{const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return(h?h+"시간 ":"")+m+"분 "+s%60+"초"};
+const stamp=t=>new Date(t).toLocaleString("ko-KR",{month:"long",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+function stats(){const x=st.sess;if(!x)return null;const away=x.tot+(x.as&&!x.end?Date.now()-x.as:0),total=(x.end||Date.now())-x.t0-(x.gap||0);return{away,study:Math.max(total-away,0),n:x.n}}
+function goAway(){const x=st.sess;if(!x||x.end||x.as)return;x.as=Date.now();x.n++;save()}
+function back(){const x=st.sess;if(!x||!x.as)return;const d=Date.now()-x.as;x.tot+=d;x.log.push([x.as,d]);x.as=0;save()}
+document.addEventListener("visibilitychange",()=>document.hidden?goAway():back());window.addEventListener("blur",goAway);window.addEventListener("focus",back);
+const live=k=>`<span data-k="${k}"></span>`;
+let restoredNote=false,tEnding=false;
+function loadSaves(){try{return JSON.parse(localStorage.getItem("flat-coach-saves")||"{}")||{}}catch(e){return{}}}
+function putSaves(o){try{localStorage.setItem("flat-coach-saves",JSON.stringify(o))}catch(e){}}
+function archiveWork(){if(!st.sid)return;const o=loadSaves();o[st.sid]={name:st.name,a:st.a,topic:st.topic,wz:st.wz,hl:st.hl,step:st.step,sess:st.sess,sub:st.sub||0,saved:Date.now()};putSaves(o)}
+function resetWork(){st.a={};st.wz={};st.hl={};st.topic=0;st.step=0;st.sess=null;st.sub=0;st.sid="";st.name="";st.dw=0;subWarn=false;save()}
+function clearScreen(){archiveWork();resetWork();const b=$("#endbox");if(b)b.hidden=true;renderSess();render();window.scrollTo(0,0)}
+function askEnd(){const b=$("#endbox");b.hidden=false;
+ b.innerHTML="<b>학습을 종료할까요?</b> 종료하면 화면의 내용이 지워져요. 나중에 <b>같은 학번과 이름</b>으로 학습 시작을 누르면 이어서 쓸 수 있어요."+(typeof submit==="function"&&!st.sub?"<br>⚠ 아직 <b>최종 보고서를 제출하지 않았어요.</b>":"")+"<div class=\"row\" style=\"margin:8px 0 0\"><button class=\"btn pri\" id=\"e1\">📄 PDF 받고 종료</button><button class=\"btn\" id=\"e2\">그냥 종료</button><button class=\"btn\" id=\"e3\">취소</button></div><div class=\"msg\" id=\"em\" role=\"status\"></div>";
+ b.scrollIntoView({block:"nearest"})}
+async function endStudy(wp){const x=st.sess;if(!x||tEnding)return;tEnding=true;back();x.end=x.end||Date.now();save();renderSess();
+ if(wp){const em=$("#em"),w=tmp([repHtml()]);if(em)em.textContent="PDF를 만드는 중…";
+  try{await makePdf(w.els,"Flatland_"+(st.sid||"보고서")+"_"+(st.name||"")+".pdf")}catch(e){w.box.remove();tEnding=false;const m2=$("#em");if(m2)m2.textContent="PDF를 만들지 못했어요. 인터넷을 확인하거나 아래 보고서 완성 단계의 ‘인쇄’로 저장한 뒤, ‘그냥 종료’를 눌러 주세요.";return}
+  w.box.remove()}
+ clearScreen();tEnding=false}
+function renderSess(){const x=st.sess,e=$("#sess");
+ if(!x){e.innerHTML=`<div><i>학번</i><input id="sid" placeholder="예: 20101" value="${esc(st.sid)}"></div><div><i>이름</i><input id="snm" placeholder="이름" value="${esc(st.name)}"></div><button class="btn pri" id="go">학습 시작</button><span class="msg" id="sm">학번과 이름을 입력하고 학습 시작을 눌러야 활동지를 쓸 수 있어요. 이전에 쓴 기록이 있으면 같은 학번·이름으로 불러와요.</span>`;
+  $("#go").onclick=()=>{const a=$("#sid").value.trim(),b=$("#snm").value.trim(),m=$("#sm");if(!a||!b){m.textContent="학번과 이름을 모두 입력해 주세요.";return}
+   const o=loadSaves(),r=o[a];if(r&&r.name!==b){m.textContent="이 학번으로 저장된 기록이 있는데 이름이 달라요. 학번과 이름을 다시 확인해 주세요.";return}
+   st.sid=a;st.name=b;
+   if(r){st.a=r.a||{};st.topic=r.topic||0;st.wz=r.wz||{};st.hl=r.hl||{};st.step=r.step||0;st.sub=r.sub||0;const s=r.sess;
+    if(s){if(s.end){s.gap=(s.gap||0)+(Date.now()-s.end);s.end=0}s.as=0;st.sess=s}else st.sess={t0:Date.now(),n:0,tot:0,as:0,log:[],end:0,gap:0};
+    delete o[a];putSaves(o);restoredNote=true}
+   else{st.a={};st.topic=0;st.wz={};st.hl={};st.step=0;st.sub=0;st.sess={t0:Date.now(),n:0,tot:0,as:0,log:[],end:0,gap:0}}
+   save();renderSess();render()};return}
+ e.innerHTML=`<div><i>학번</i><b>${esc(st.sid)}</b></div><div><i>이름</i><b>${esc(st.name)}</b></div><div><i>학습 시작</i><b>${stamp(x.t0)}</b></div><div><i>학습 시간</i><b>${live("dur")}</b></div><div><i>이탈 횟수</i><b>${live("cnt")}회</b></div><div><i>이탈 시간</i><b>${live("away")}</b></div>${x.end?`<button class="btn" id="rs">화면 지우기</button>`:`<button class="btn" id="en">학습 종료</button>`}${restoredNote?`<span class="msg" role="status">✓ 저장된 기록을 불러왔어요.</span>`:""}`;restoredNote=false;
+ if(x.end)$("#rs").onclick=clearScreen;else $("#en").onclick=askEnd;tick()}
+document.addEventListener("click",e=>{const id=e.target.id;if(id==="e1")endStudy(true);if(id==="e2")endStudy(false);if(id==="e3")$("#endbox").hidden=true});
+function tick(){const s=stats();if(!s)return;document.querySelectorAll("[data-k]").forEach(e=>{const k=e.dataset.k;e.textContent=k=="dur"?fmt(s.study):k=="cnt"?s.n:fmt(s.away)})}
+
+function repHead2(d){const x=d.sess;if(!x)return `<p class="empty">학습 시작 기록 없음</p>`;const L=d.live,lg=(x.log||[]).slice(0,8).map(l=>{l=Array.isArray(l)?l:[l.s,l.d];return stamp(l[0]).replace(/^.*일 /,"")+"("+fmt(l[1])+")"}).join(", ")||"없음";
+ const dur=L?live("dur"):fmt(x.study),cnt=L?live("cnt"):x.n,aw=L?live("away"):fmt(x.away);
+ return `<table class="r"><tr><th>학번</th><td>${esc(d.sid)}</td><th>이름</th><td>${esc(d.name)}</td></tr><tr><th>학습 시작</th><td>${stamp(x.t0)}</td><th>${x.end?"학습 종료":"상태"}</th><td>${x.end?stamp(x.end):"진행 중"}</td></tr><tr><th>학습 시간</th><td>${dur}</td><th>이탈</th><td>${cnt}회 · ${aw}</td></tr><tr><th>이탈 기록</th><td colspan="3">${lg}</td></tr></table>`}
+function repHtml2(d){const A=d.a||{},P=T[d.topic||0],g=id=>A[id]?`<p>${esc(A[id])}</p>`:`<p class="empty">(작성하지 않음)</p>`;
+ const dm=[["라인랜드","1차원","dimL1","dimL2"],["플랫랜드","2차원","dimF1","dimF2"],["스페이스랜드","3차원","dimS1","dimS2"]];
+ return `<div class="rep" id="rep"><h2>[기하] 단편영화 ‘Flatland’ 심화 탐구 보고서</h2>${repHead2(d)}
+ <h3>1. 영화 속 차원 세계 정리</h3><table class="r"><tr><th>세계</th><th>인식 가능</th><th>인식 불가능</th></tr><tr><td>포인트랜드(0차원)</td><td>없음. 이동·방향이 정의되지 않아 자기 자신 외에는 인식하지 못한다.</td><td>—</td></tr>${dm.map(r=>`<tr><td>${r[0]}(${r[1]})</td><td>${esc(A[r[2]]||"")}</td><td>${esc(A[r[3]]||"")}</td></tr>`).join("")}</table>
+ <h3>2. 단면으로 고차원 읽기: 이차곡선과의 연결</h3><p class="qq">${QTXT.q1}</p>${g("q1")}
+ <h3>3. 공간좌표로 단면 계산하기</h3><p class="qq">${QTXT.q2a}</p>${g("q2a")}<p class="qq">${QTXT.q2b}</p>${g("q2b")}
+ <h3>4. 토론 및 확장: ${P.t}</h3><p class="qq">${P.q}</p>${g("q3")}</div>`}
+function repHtml(){return repHtml2({a:st.a,topic:st.topic,sid:st.sid,name:st.name,sess:st.sess,live:true})}
+function subMsg(){return st.sub?"✓ "+stamp(st.sub)+"에 제출했어요. 고친 뒤 다시 제출하면 최신 내용으로 바뀌어요. 다 마쳤다면 맨 위 ‘화면 지우기’를 눌러 주세요.":"다 정리했다면 ‘최종 보고서 제출’을 눌러 선생님께 보내세요. 제출하면 학습 시간이 종료돼요. 다 마쳤다면 맨 위 ‘화면 지우기’를 눌러 다음 학생이 쓸 수 있게 해 주세요."}
+let subWarn=false,subs=[];
+function tmp(h){const b=document.createElement("div");b.style.cssText="position:absolute;left:-9999px;top:0;width:760px";b.innerHTML=h.join("");document.body.appendChild(b);tick();return{box:b,els:[...b.children]}}
+async function rptPages(el){if(!window.jspdf||!window.html2canvas)throw 0;const c=await html2canvas(el,{scale:2,backgroundColor:"#ffffff"}),W=190,H=277,ph=H*c.width/W,out=[];
+ for(let y=0;y<c.height-2;y+=ph){const h=Math.min(ph,c.height-y),k=document.createElement("canvas");k.width=c.width;k.height=h;const g=k.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,k.width,h);g.drawImage(c,0,y,c.width,h,0,0,c.width,h);out.push({d:k.toDataURL("image/jpeg",.9),r:h*W/c.width});k.width=k.height=0}
+ c.width=c.height=0;return out}
+function pagesToPdf(pages){const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"});pages.forEach((p,i)=>{if(i)pdf.addPage();pdf.addImage(p.d,"JPEG",10,10,190,p.r)});return pdf.output("blob")}
+async function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+async function makePdf(els,name){const pages=[];for(const el of els)pages.push(...await rptPages(el));await saveBlob(pagesToPdf(pages),name)}
+let tbusy=false;
+const ymd=()=>new Date().toLocaleDateString("sv-SE").replace(/-/g,"");
+function ckCount(){const n=document.querySelectorAll(".ck:checked").length,sdd=$("#sd"),e=$("#sc"),a=$("#tall"),all=document.querySelectorAll(".ck");if(sdd)sdd.textContent=n;if(e)e.textContent=n;if(a)a.checked=all.length>0&&n===all.length}
+async function mergeSubs(ids){if(tbusy)return;const m=$("#tm");let L=subs.filter(x=>ids.includes(x.id));
+ if($("#tdd")&&$("#tdd").checked){const best={};L.forEach(x=>{const k=String(x.sid).trim();if(!best[k]||x.at>best[k].at)best[k]=x});L=L.filter(x=>best[String(x.sid).trim()]===x)}
+ if(!L.length){m.textContent="합칠 보고서가 없어요.";return}
+ tbusy=true;const cover=$("#tcov")&&$("#tcov").checked,w=tmp(L.map(x=>repHtml2({a:x.a,topic:x.topic,sid:x.sid,name:x.name,sess:x.sess}))),tw=[];
+ try{const pg=[],all=[];
+  for(let i=0;i<L.length;i++){m.textContent="보고서를 그리는 중… "+(i+1)+"/"+L.length;await new Promise(r=>setTimeout(r,20));pg.push(await rptPages(w.els[i]))}
+  if(cover){const per=20,nc=Math.ceil(L.length/per);let p=nc+1;const sp=L.map((x,i)=>{const s=p;p+=pg[i].length;return s});
+   const hs=[];for(let c=0;c<nc;c++){const part=L.slice(c*per,(c+1)*per);
+    hs.push(`<div class="rep"><h2>[기하] Flatland 탐구 보고서 모음${nc>1?" ("+(c+1)+"/"+nc+")":""}</h2><p class="qq">제출 ${L.length}명 · 학번 순 · ${stamp(Date.now())} 생성</p><table class="r"><tr><th>번호</th><th>학번</th><th>이름</th><th>제출 시각</th><th>학습 시간</th><th>이탈</th><th>쪽</th></tr>${part.map((x,j)=>`<tr style="white-space:nowrap"><td>${c*per+j+1}</td><td>${esc(x.sid)}</td><td>${esc(x.name)}</td><td>${stamp(x.at)}</td><td>${fmt(x.sess.study)}</td><td>${x.sess.n}회</td><td>${sp[c*per+j]}</td></tr>`).join("")}</table></div>`)}
+   const cw=tmp(hs);tw.push(cw);for(const el of cw.els)all.push(...(await rptPages(el)).slice(0,1))}
+  pg.forEach(a=>all.push(...a));
+  m.textContent="PDF 파일로 묶는 중…";await saveBlob(pagesToPdf(all),"Flatland_학생보고서_합본_"+L.length+"명_"+ymd()+".pdf");
+  m.textContent="✓ "+L.length+"명, 총 "+all.length+"쪽짜리 PDF 한 개를 저장했어요."}
+ catch(e){m.textContent=e&&e.code==="declined"?"저장이 취소됐어요.":"PDF를 만들지 못했어요. 인터넷(PDF 도구 불러오기)을 확인하고 다시 눌러 주세요. 학생 수가 많으면 선택해서 나눠 받아 보세요."}
+ w.box.remove();tw.forEach(x=>x.box.remove());tbusy=false}
+let pendDel=null;
+async function delOne(id){const f=await fbw();await f.deleteDoc(f.doc(f.db,"submissions",id))}
+function askDel(ids,msg,typed){pendDel={ids,typed};const b=$("#tcf");b.hidden=false;
+ b.innerHTML="<b>"+esc(msg)+"</b> 되돌릴 수 없어요. 먼저 PDF로 받아 두는 걸 권해요."+(typed?"<br>확인을 위해 <b>삭제</b>라고 입력하세요: <input id=\"tin\" autocomplete=\"off\" style=\"width:90px;padding:5px 8px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font:inherit\">":"")+"<div class=\"row\" style=\"margin:8px 0 0\"><button class=\"btn\" id=\"tok\" style=\"background:var(--bad);color:#fff;border-color:var(--bad)\">삭제하기</button><button class=\"btn\" id=\"tcn\">취소</button></div>";
+ b.scrollIntoView({block:"center"});if(typed)$("#tin").focus()}
+async function delSubs(ids){if(tbusy)return;tbusy=true;const m=$("#tm");let ok=0,fail=0,last=null;
+ for(let i=0;i<ids.length;i++){m.textContent="삭제하는 중… "+(i+1)+"/"+ids.length;try{await delOne(ids[i]);ok++}catch(e){fail++;last=e}}
+ tbusy=false;await loadSubs();
+ m.textContent=(ok?"✓ "+ok+"건을 삭제했어요. ":"")+(fail?fail+"건은 삭제하지 못했어요."+(typeof errTxt==="function"?errTxt(last):""):"")}
+async function stuPdf(){const m=$("#sst"),w=tmp([repHtml()]);m.textContent="PDF를 만드는 중…";try{await makePdf(w.els,`Flatland_${st.sid||"보고서"}_${st.name||""}.pdf`);m.textContent="PDF 저장을 요청했어요. "+subMsg()}catch(e){m.textContent="이 환경에서는 PDF 저장이 막혔어요. ‘인쇄’ 버튼에서 PDF로 저장해 주세요."}w.box.remove()}
+async function submit(){const m=$("#sst"),miss=STEPS.slice(0,4).filter(x=>!isDone(x));
+ if(miss.length&&!subWarn){subWarn=true;m.textContent="보완하면 좋은 단계: "+miss.map(x=>x.t).join(", ")+". 그대로 제출하려면 한 번 더 누르세요.";return}
+ subWarn=false;m.textContent="제출하는 중…";
+ try{const f=await fbw();if(!st.sess)throw 0;const id=f.auth.currentUser.uid;
+  back();const x=st.sess;if(!x.end)x.end=Date.now();const v=stats();
+  await f.setDoc(f.doc(f.db,"submissions",id),{sid:st.sid,name:st.name,a:st.a,topic:st.topic,at:Date.now(),sess:{t0:x.t0,end:x.end,n:x.n,study:v.study,away:v.away,log:x.log.map(l=>({s:l[0],d:l[1]}))}});
+  st.sub=Date.now();save();renderSess();$("#sst").textContent=subMsg()}
+ catch(e){$("#sst").textContent="제출하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 PDF를 내려받아 제출하세요."+errTxt(e)}}
+const EH={"auth/operation-not-allowed":"Firebase > Authentication > 로그인 방법에서 ‘익명’과 ‘이메일/비밀번호’를 켜 주세요.","auth/admin-restricted-operation":"Firebase > Authentication > 로그인 방법에서 ‘익명’을 켜 주세요.","auth/unauthorized-domain":"Firebase > Authentication > 설정 > 승인된 도메인에 이 사이트의 도메인(예: 아이디.github.io)을 추가해 주세요.","auth/invalid-credential":"교사 계정(TEACHER_EMAIL)이 없거나 비밀번호가 달라요. Authentication > 사용자에서 확인해 주세요.","auth/user-not-found":"교사 계정이 없어요. Authentication > 사용자에서 추가해 주세요.","auth/wrong-password":"비밀번호가 달라요.","auth/invalid-api-key":"index.html 위쪽 Firebase 설정값(apiKey)이 맞지 않아요.","auth/api-key-not-valid.-please-pass-a-valid-api-key.":"index.html 위쪽 Firebase 설정값(apiKey)이 맞지 않아요.","auth/network-request-failed":"인터넷 연결을 확인해 주세요.","auth/too-many-requests":"시도가 너무 많아요. 잠시 뒤 다시 해 주세요.","permission-denied":"Firestore ‘규칙’을 게시했는지, 규칙 속 교사 이메일이 index.html과 같은지 확인해 주세요.","not-found":"Firestore 데이터베이스를 아직 만들지 않았어요. Firestore Database에서 만들어 주세요.","failed-precondition":"Firestore 데이터베이스 설정이 끝나지 않았어요.","unavailable":"인터넷 연결을 확인해 주세요.","firebase-not-loaded":"Firebase 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요."};
+function errTxt(e){const c=(e&&e.code)||window.__fbErr||"";return c?" [오류: "+c+"] "+(EH[c]||""):""}
+async function fbw(){for(let i=0;i<60&&window.__fbErr!=="firebase-not-loaded"&&!(window.__fb&&window.__fb.auth.currentUser);i++)await new Promise(r=>setTimeout(r,250));const f=window.__fb;if(!f||!f.auth.currentUser)throw {code:window.__fbErr||"firebase-not-loaded"};return f}
+function showTeacher(){$("#nav").style.display="none";$("#sess").style.display="none";$("#tp").innerHTML="";const m=$("#main");m.classList.remove("locked");
+ m.innerHTML=`<div class="tip"><b>교사 모드</b> · 제출 <b id="tc">0</b>건 <button class="btn" id="tr">새로고침</button> <button class="btn" id="tx">나가기</button></div><div class="tip"><b>PDF 한 개로 합쳐 받기</b> <span class="msg">(학번 순 · 학생마다 새 쪽에서 시작)</span><div class="row"><button class="btn pri" id="tm1">📑 전체 합쳐 받기</button><button class="btn" id="tm2">✔ 선택한 학생 합쳐 받기 (<span id="sc">0</span>명)</button></div><label><input type="checkbox" id="tcov" checked> 맨 앞에 학생 목록(쪽 번호) 표지 넣기</label><br><label><input type="checkbox" id="tdd" checked> 학번이 같은 제출은 가장 최근 것만 넣기</label><div class="msg" id="tm" role="status"></div></div><div class="tip"><b>제출 삭제</b> <span class="msg">(삭제하면 되돌릴 수 없어요. 먼저 PDF로 받아 두세요)</span><div class="row"><button class="btn" id="td1" style="color:var(--bad)">🗑 선택한 학생 삭제 (<span id="sd">0</span>명)</button><button class="btn" id="td2" style="color:var(--bad)">🗑 전체 삭제</button></div><div class="hint" id="tcf" hidden></div></div><div id="tl"></div><div id="tv"></div>`;loadSubs()}
+async function loadSubs(){const l=$("#tl");l.textContent="불러오는 중…";
+ try{const f=await fbw();const q=await f.getDocs(f.collection(f.db,"submissions"));subs=q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>String(a.sid).localeCompare(String(b.sid),"ko",{numeric:true}));$("#tc").textContent=subs.length;
+  l.innerHTML=subs.length?`<table class="r"><tr><th><input type="checkbox" id="tall" aria-label="전체 선택"></th><th>학번</th><th>이름</th><th>제출</th><th>학습시간</th><th>이탈</th><th></th></tr>`+subs.map(x=>`<tr><td><input type="checkbox" class="ck" value="${x.id}" aria-label="선택"></td><td>${esc(x.sid)}</td><td>${esc(x.name)}</td><td>${stamp(x.at)}</td><td>${fmt(x.sess.study)}</td><td>${x.sess.n}회 · ${fmt(x.sess.away)}</td><td><button class="btn" data-pv="${x.id}">보기</button> <button class="btn" data-pf="${x.id}">PDF</button> <button class="btn" data-pd="${x.id}" style="color:var(--bad)">삭제</button></td></tr>`).join("")+`</table>`:"아직 제출된 보고서가 없어요.";ckCount()}
+ catch(e){l.textContent="불러오지 못했어요. 교사 계정으로 로그인됐는지, Firebase 설정과 보안 규칙을 확인해 주세요."+errTxt(e)}}
+async function tPdf(ids,name){const L=subs.filter(x=>!ids.length||ids.includes(x.id));if(!L.length)return;const m=$("#tm");m.textContent="PDF를 만드는 중… ("+L.length+"명)";
+ const w=tmp(L.map(x=>repHtml2({a:x.a,topic:x.topic,sid:x.sid,name:x.name,sess:x.sess})));
+ try{await makePdf(w.els,name);m.textContent="PDF 저장을 요청했어요."}catch(e){m.textContent="PDF 저장에 실패했어요. 저장이 막힌 환경일 수 있어요."}w.box.remove()}
+document.addEventListener("click",async e=>{const t=e.target,d=t.dataset||{};
+ if(t.id==="tch"){$("#tp").innerHTML=`<input type="password" id="pw" placeholder="교사 비밀번호" autocomplete="off" style="padding:6px 9px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font:inherit"> <button class="btn pri" id="tgo">입장</button> <span class="msg" id="pm"></span> `;$("#pw").focus()}
+ if(t.id==="tgo"){try{const f=window.__fb;await f.signInWithEmailAndPassword(f.auth,window.TEACHER_EMAIL,$("#pw").value);showTeacher()}catch(x){$("#pm").textContent="로그인하지 못했어요."+errTxt(x)}}
+ if(t.id==="tr")loadSubs();
+ if(t.id==="tm1")mergeSubs(subs.map(x=>x.id));
+ if(t.id==="tm2"){const ids=[...document.querySelectorAll(".ck:checked")].map(c=>c.value);if(!ids.length){$("#tm").textContent="체크한 학생이 없어요. 표 왼쪽 칸에서 학생을 고르세요.";return}mergeSubs(ids)}
+ if(t.id==="tall"){document.querySelectorAll(".ck").forEach(c=>c.checked=t.checked);ckCount()}
+ if(d.pd){const x=subs.find(y=>y.id===d.pd);if(x)askDel([x.id],"‘"+x.sid+" "+x.name+"’ 학생의 제출 1건을 삭제할까요?",false)}
+ if(t.id==="td1"){const ids=[...document.querySelectorAll(".ck:checked")].map(c=>c.value);if(!ids.length){$("#tm").textContent="체크한 학생이 없어요. 표 왼쪽 칸에서 학생을 고르세요.";return}askDel(ids,"선택한 "+ids.length+"건의 제출을 삭제할까요?",false)}
+ if(t.id==="td2"){if(!subs.length){$("#tm").textContent="삭제할 제출이 없어요.";return}askDel(subs.map(x=>x.id),"제출 전체 "+subs.length+"건을 삭제할까요?",true)}
+ if(t.id==="tcn"){$("#tcf").hidden=true;pendDel=null}
+ if(t.id==="tok"&&pendDel){if(pendDel.typed&&($("#tin").value||"").trim()!=="삭제"){$("#tm").textContent="‘삭제’라고 정확히 입력해야 전체 삭제가 돼요.";return}const ids=pendDel.ids;pendDel=null;$("#tcf").hidden=true;await delSubs(ids)}
+ if(t.id==="tx"){try{const f=window.__fb;await f.signOut(f.auth);await f.signInAnonymously(f.auth)}catch(x){}$("#nav").style.display="";$("#sess").style.display="";render()}
+ if(d.pv){const x=subs.find(y=>y.id===d.pv);$("#tv").innerHTML=repHtml2({a:x.a,topic:x.topic,sid:x.sid,name:x.name,sess:x.sess});$("#tv").scrollIntoView({behavior:"smooth"})}
+ if(d.pf){const x=subs.find(y=>y.id===d.pf);tPdf([x.id],`Flatland_${x.sid}_${x.name}.pdf`)}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="pw")$("#tgo").click()});
+
+const C=n=>getComputedStyle(document.body).getPropertyValue(n).trim(),V3={};
+function scene(id,fn){const cv=$("#"+id);if(!cv)return;let s=V3[id];if(!s||s.cv!==cv){s=V3[id]={cv,yaw:.8,pitch:.45};cv.onpointerdown=e=>{s.d=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId);cv.style.cursor="grabbing"};cv.onpointermove=e=>{if(!s.d)return;s.yaw+=(e.clientX-s.d[0])*.01;s.pitch=Math.max(-1.3,Math.min(1.45,s.pitch+(e.clientY-s.d[1])*.01));s.d=[e.clientX,e.clientY];s.go()};cv.onpointerup=cv.onpointercancel=()=>{s.d=null;cv.style.cursor="grab"}}
+ s.fn=fn;s.go=()=>{const g=cv.getContext("2d"),W=cv.width,H=cv.height,k=Math.min(W,H)/3.3,cy=Math.cos(s.yaw),sy=Math.sin(s.yaw),cp=Math.cos(s.pitch),sp=Math.sin(s.pitch);
+  const P=(x,y,z)=>{const X=x*cy-y*sy,Y=x*sy+y*cy;return[W/2+X*k,H/2-(Y*sp+z*cp)*k]};g.clearRect(0,0,W,H);g.lineJoin="round";
+  const L=(pts,col,w,fill)=>{g.beginPath();pts.forEach((p,i)=>{const q=P(...p);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])});if(fill){g.closePath();g.fillStyle=fill;g.fill()}if(col){g.strokeStyle=col;g.lineWidth=w||1;g.stroke()}};s.fn(L)};s.go()}
+const ring=(r,z,n=48)=>Array.from({length:n+1},(_,i)=>{const a=i/n*6.2832;return[r*Math.cos(a),r*Math.sin(a),z]});
+function drawCone(b){scene("c3",L=>{const al=.6109,ta=Math.tan(al),sa=Math.sin(al),ca=Math.cos(al),H=1.5,ink=C("--ink"),line=C("--line"),acc=C("--acc"),bad=C("--bad");
+ [-1,1].forEach(g=>{for(let h=.5;h<=H;h+=.5)L(ring(h*ta,g*h),line,1);for(let i=0;i<12;i++){const a=i/12*6.2832;L([[0,0,0],[H*ta*Math.cos(a),H*ta*Math.sin(a),g*H]],line,1)}L(ring(H*ta,g*H),ink,1.6)});
+ L([[0,0,-H-.2],[0,0,H+.2]],ink,1);
+ const t=b*Math.PI/180,sb=Math.sin(t),cb=Math.cos(t),z0=.8,q=1.4;
+ L([[-1,-1],[1,-1],[1,1],[-1,1]].map(([u,v])=>[z0*0+q*u*-sb,q*v,z0+q*u*cb]),acc,2,acc+"33");
+ let seg=[],sg=0;const fl=()=>{if(seg.length>1)L(seg,bad,3.5);seg=[]};
+ for(let i=0;i<=360;i++){const th=i/360*6.2832,nu=cb*sa*Math.cos(th)+sb*ca;if(Math.abs(nu)<.02){fl();continue}const tt=sb*z0/nu;if(Math.abs(tt*ca)>H||Math.abs(tt*sa)>H*ta+.01){fl();continue}if(seg.length&&Math.sign(tt)!==sg)fl();sg=Math.sign(tt);seg.push([tt*sa*Math.cos(th),tt*sa*Math.sin(th),tt*ca])}fl()})}
+function drawSph(k){scene("s3",L=>{const ink=C("--ink"),line=C("--line"),acc=C("--acc"),bad=C("--bad"),z=Math.max(-1.25,Math.min(1.25,k/5));
+ for(let i=-2;i<=2;i++){const f=i*.3;L(ring(Math.cos(f*1.2),Math.sin(f*1.2)*1,48).map(p=>[p[0],p[1],p[2]]),line,1)}
+ for(let j=0;j<6;j++){const a=j/6*3.1416;L(Array.from({length:49},(_,i)=>{const t=i/48*6.2832;return[Math.cos(t)*Math.cos(a),Math.cos(t)*Math.sin(a),Math.sin(t)]}),line,1)}
+ L(ring(1,0),ink,1.6);L([[0,0,-1.3],[0,0,1.3]],ink,1);
+ L([[-1.3,-1.3,z],[1.3,-1.3,z],[1.3,1.3,z],[-1.3,1.3,z]],acc,2,acc+"33");
+ if(Math.abs(z)<1)L(ring(Math.sqrt(1-z*z),z),bad,3.5,bad+"44")})}
+const LO=[[1.5,3,"선분"],[6.5,6.5,"점"],[8.5,10,"선분"]],SH=[["t",5.2,3,.9],["s",7.2,1.1,.8],["c",2.9,.9,.7]];let LD={x:5,d:1},FD={x:1,y:2,a:0};
+function dimDraw(i){st.dw=i;document.querySelectorAll("#db button").forEach((b,j)=>{b.className=j===i?"btn pri":"btn"});
+ $("#dcp").textContent=["포인트랜드(0차원) · ","라인랜드(1차원) · ","플랫랜드(2차원) · ","스페이스랜드(3차원) · "][i]+DD[i][0];
+ const cv=(id,h)=>`<canvas id="${id}" width="340" height="${h}" style="width:100%;max-width:340px;display:block;margin:4px auto;touch-action:none"></canvas>`,bt=(a,t)=>`<button data-mv="${a}">${t}</button>`,bar=x=>`<div class="bar" style="justify-content:center">${x}</div>`;
+ $("#dst").innerHTML=[cv("dc",110)+bar(bt("p","◀ 가 보기")+bt("p","▶ 가 보기"))+`<div class="msg" id="dn">움직여 보세요.</div>`,
+  cv("dc",150)+`<div class="msg" style="text-align:center">동그라미 점을 끌어 옮기거나 버튼으로 움직여 보세요. 점선이 내 시선이에요.</div>`+bar(bt("L-1","◀ 왼쪽 보기")+bt("L1","오른쪽 보기 ▶")+bt("M-1","← 이동")+bt("M1","이동 →"))+`<div class="msg" id="dn"></div>`,
+  cv("dc",170)+cv("dv",50)+`<label class="msg">바라보는 방향 <input type="range" id="fa" min="0" max="359" value="${FD.a}"></label><div class="msg" id="dn">지도를 끌어 위치를 옮기고, 슬라이더로 몸을 돌려 보세요. 아래 띠가 주민이 실제로 보는 1차원 시야예요.</div>`,
+  cv("sp",260)+`<div class="msg" id="dn">그림을 끌어서 돌려 보세요. 어느 방향에서든 입체 전체와, 평면 세계의 도형까지 한눈에 보여요.</div>`][i];
+ if(i==1){const c=$("#dc"),mv=e=>{const r=c.getBoundingClientRect(),v=Math.max(.2,Math.min(11.8,((e.clientX-r.left)*340/r.width-20)/25));let x=LD.x;const dir=v>x?1:-1;while(Math.abs(v-x)>.05){const nx=x+dir*.05;if(LO.some(o=>nx>o[0]-.3&&nx<o[1]+.3))break;x=nx}if(Math.abs(x-LD.x)>.02){LD.d=dir;LD.x=x;dimPaint()}};c.style.cursor="ew-resize";c.onpointerdown=e=>{c.setPointerCapture(e.pointerId);c.dn=1;mv(e)};c.onpointermove=e=>{if(c.dn)mv(e)};c.onpointerup=()=>{c.dn=0}}
+ if(i==2){const c=$("#dc"),mv=e=>{const r=c.getBoundingClientRect();FD.x=Math.max(.2,Math.min(8.3,(e.clientX-r.left)*340/r.width/40));FD.y=Math.max(.2,Math.min(3.9,(170-(e.clientY-r.top)*170/r.height)/40));dimPaint()};c.onpointerdown=e=>{c.setPointerCapture(e.pointerId);c.dn=1;mv(e)};c.onpointermove=e=>{if(c.dn)mv(e)};c.onpointerup=()=>{c.dn=0};$("#fa").oninput=e=>{FD.a=+e.target.value;dimPaint()}}
+ dimPaint()}
+function dimPaint(){const i=st.dw||0,ink=C("--ink"),acc=C("--acc"),bad=C("--bad"),line=C("--line"),sub=C("--sub"),c=$("#dc"),g=c&&c.getContext("2d");
+ if(i==3){scene("sp",L=>{const chip=C("--chip");L([[-1.4,-1.4,0],[1.4,-1.4,0],[1.4,1.4,0],[-1.4,1.4,0]],line,1.5,chip+"cc");L([[-1,-1,0],[-.5,-1,0],[-.5,-.5,0],[-1,-.5,0]],ink,2,acc+"66");L([[.6,-1,0],[1.1,-1,0],[.85,-.55,0]],ink,2,acc+"66");
+  const q=.35,z0=.7;for(const a of[-q,q])for(const b of[-q,q]){L([[-q,a,z0+b],[q,a,z0+b]],ink,1.5);L([[a,-q,z0+b],[a,q,z0+b]],ink,1.5);L([[a,b,z0-q],[a,b,z0+q]],ink,1.5)}
+  [0,1,2].forEach(k=>L(ring(.4,0,40).map(p=>[[p[0]+.7,p[1]+.6,p[2]+.9],[p[0]+.7,p[2]+.6,p[1]+.9],[p[2]+.7,p[0]+.6,p[1]+.9]][k]),bad,1.5));L([[0,0,0],[0,0,1.7]],bad,2)});return}
+ if(!g)return;g.font="12px sans-serif";g.textAlign="left";g.lineWidth=1;
+ if(i==0){g.clearRect(0,0,340,110);g.fillStyle=acc;g.beginPath();g.arc(170,50,8,0,6.3);g.fill();g.fillStyle=sub;g.textAlign="center";g.fillText("보이는 것: 나 자신뿐",170,92)}
+ if(i==1){g.clearRect(0,0,340,150);const X=v=>20+v*25,d=LD.d,ox=X(LD.x);g.strokeStyle=ink;g.lineWidth=2;g.beginPath();g.moveTo(20,45);g.lineTo(320,45);g.stroke();
+  LO.forEach(o=>{if(o[0]===o[1]){g.fillStyle=bad;g.beginPath();g.arc(X(o[0]),45,6,0,6.3);g.fill()}else{g.strokeStyle=bad;g.lineWidth=8;g.beginPath();g.moveTo(X(o[0]),45);g.lineTo(X(o[1]),45);g.stroke()}});
+  g.fillStyle=acc;g.strokeStyle=ink;g.lineWidth=2;g.beginPath();g.arc(ox,45,8,0,6.3);g.fill();g.stroke();g.fillStyle=sub;g.textAlign="center";g.fillText(d>0?"시선 →":"← 시선",ox,28);g.textAlign="left";g.fillStyle=sub;g.fillText("위에서 본 라인랜드 (주민은 이 그림을 볼 수 없어요)",20,16);g.fillText("내 눈에 보이는 것 (0차원 시야: 점)",20,100);g.strokeStyle=line;g.lineWidth=1;g.strokeRect(20,108,300,26);
+  const f=LO.filter(o=>d>0?o[0]>LD.x:o[1]<LD.x).sort((a,b)=>d>0?a[0]-b[0]:b[1]-a[1])[0];
+  {const ex=f?X(d>0?f[0]:f[1]):(d>0?320:20);g.strokeStyle=acc;g.setLineDash([6,4]);g.lineWidth=2.5;g.beginPath();g.moveTo(ox+d*10,45);g.lineTo(ex,45);g.stroke();g.setLineDash([])}
+  if(f){const dist=d>0?f[0]-LD.x:LD.x-f[1];g.fillStyle=bad;g.beginPath();g.arc(170,121,5,0,6.3);g.fill();$("#dn").textContent="바로 앞에 점 하나가 보여요 · 거리 "+dist.toFixed(1)+". 상대가 점이든 선분이든 가까운 끝만 보여서 길이는 알 수 없고, 그 뒤의 것은 가려져요."}else $("#dn").textContent="앞에 아무것도 없어요. 옆(폭)이라는 방향이 없어서 이 선 밖은 상상할 수 없어요."}
+ if(i==2){const U=40,a=FD.a*Math.PI/180,fov=1.75,px=FD.x*U,py=170-FD.y*U;g.clearRect(0,0,340,170);g.strokeStyle=line;g.strokeRect(.5,.5,339,169);g.fillStyle=acc+"33";g.beginPath();g.moveTo(px,py);g.arc(px,py,90,-(a+fov/2),-(a-fov/2));g.fill();
+  g.strokeStyle=ink;g.lineWidth=2;SH.forEach(h=>{const x=h[1]*U,y=170-h[2]*U,r=h[3]*U;g.beginPath();if(h[0]=="c")g.arc(x,y,r,0,6.3);else if(h[0]=="s")g.rect(x-r*.8,y-r*.8,r*1.6,r*1.6);else{g.moveTo(x,y-r);g.lineTo(x+r*.9,y+r*.6);g.lineTo(x-r*.9,y+r*.6);g.closePath()}g.stroke()});
+  g.fillStyle=bad;g.beginPath();g.arc(px,py,6,0,6.3);g.fill();g.fillStyle=sub;g.fillText("위에서 본 플랫랜드",8,16);
+  const v=$("#dv").getContext("2d");v.clearRect(0,0,340,50);v.strokeStyle=line;v.strokeRect(.5,14.5,339,26);v.fillStyle=sub;v.font="12px sans-serif";v.fillText("내 눈에 보이는 1차원 시야 (왼쪽 ↔ 오른쪽)",4,10);
+  SH.map(h=>{const dx=h[1]-FD.x,dy=h[2]-FD.y,dist=Math.hypot(dx,dy);let dl=Math.atan2(dy,dx)-a;dl=Math.atan2(Math.sin(dl),Math.cos(dl));return{dist,dl,hw:Math.asin(Math.min(1,h[3]/dist))}}).sort((p,q)=>q.dist-p.dist).forEach(o=>{const l=.5-(o.dl+o.hw)/fov,r=.5-(o.dl-o.hw)/fov;if(r<0||l>1)return;v.globalAlpha=Math.max(.3,1-o.dist/9);v.fillStyle=bad;const x0=Math.max(0,l)*340;v.fillRect(x0,16,Math.min(1,r)*340-x0,22)});v.globalAlpha=1}}
+document.addEventListener("click",e=>{const m=e.target.dataset&&e.target.dataset.mv;if(!m)return;
+ if(m==="p"){$("#dn").textContent="축이 0개라서 움직일 방향이 없어요. 아무 일도 일어나지 않아요.";return}
+ if(m[0]==="L")LD.d=+m.slice(1);else{const nx=LD.x+.5*(+m.slice(1));if(!LO.some(o=>nx>o[0]-.3&&nx<o[1]+.3)&&nx>.2&&nx<11.8)LD.x=nx}dimPaint()});
+
+if(!st.wz)st.wz={};let asmOk=false;
+const WS=[["내 입장 한 줄","이 주제에서 가장 중요한 이유 하나를 한 문장으로 말한다면?"],["수학 개념으로 근거 대기","축의 개수, 정보량, 좌표 중 어떤 개념으로 설명할 수 있을까?"],["영화 장면 붙이기","이 생각이 드러난 장면은? 누가 무엇을 했는지 구체적으로 떠올려 쓰자."],["넓혀 생각하기","현실의 사례, 다른 장면, 반론이나 한계로 확장하면?"]];
+const WZ=[
+[["정사각형이 왕을 설득하지 못한 것은 능력 문제가 아니라 ‘축의 차이’ 때문이라고 생각한다.","소통이 실패한 핵심 원인은 두 세계가 가진 정보량이 다르다는 점이다."],["점의 세계는 좌표가 0개라서 방향, 길이, 넓이가 정의되지 않는다.","2차원을 설명하려면 최소 좌표 2개의 정보가 필요한데, 왕에게는 그것을 담을 축이 없다."],["영화에서 왕은 ~했고, 이는 왕이 자신의 점 말고는 인식할 수 없음을 보여 준다.","정사각형이 ~라고 설명했지만 왕에게는 ~로만 받아들여졌다."],["이는 스페이스랜드의 구가 정사각형에게 3차원을 설명할 때 겪는 어려움과 같은 구조다.","나도 ~를 설명하다가 안 통했던 경험이 있다. 그때도 서로 가진 정보가 달랐다."]],
+[["변의 수라는 기하학적 규칙이 신분 기준이 되면서 차별이 자연법칙처럼 보이게 된다고 생각한다.","객관적으로 보이는 수학적 규칙을 사회 차별의 근거로 쓰는 것이 이 설정의 풍자 포인트다."],["변의 수는 정확히 셀 수 있고, 변이 많을수록 원에 가까워진다는 규칙성이 있다.","도형의 정확한 분류가 가능하기 때문에 신분을 나누는 기준이 ‘공정한 것처럼’ 보인다."],["영화에서 변이 많은 도형일수록 높은 계급으로 대우받는 장면은 ~를 보여 준다.","영화 속 ~ 도형이 ~ 대접을 받는 장면에서 규칙의 겉모습과 불평등이 대비된다."],["현실에도 ~처럼 숫자나 등급으로 사람의 가치를 정하는 사례가 있다.","다만 이 풍자는 ~라는 한계도 있다고 생각한다."]],
+[["4차원이 상상하기 어려운 것은 머리가 부족해서가 아니라 감각이 3개 축까지만 경험했기 때문이다.","수학으로는 다루지만 감각으로는 상상하기 어려운 이유는 좌표축의 개수에 있다."],["수학은 (x,y,z,w)처럼 좌표 하나를 더 쓰면 되지만 우리 감각은 w 방향을 경험한 적이 없다.","x, y, z 세 축은 몸으로 경험하지만 네 번째 축은 식으로만 존재한다."],["플랫랜드 주민이 구를 점, 커지는 원, 작아지는 원, 점의 단면으로만 아는 장면과 같다.","주민이 구의 전체를 보지 못하고 단면만 보는 장면에서 우리의 처지를 떠올릴 수 있다."],["우리도 4차원 도형을 3차원 단면이나 그림자(투영)로 이해할 수 있다.","이 한계를 알면 ~라는 방식으로 상상력을 넓힐 수 있다고 생각한다."]]];
+function wzHtml(){const t=st.topic,v=st.wz[t]||[];return `<div class="w"><b>단계별로 생각 쌓기</b><p class="msg">${T[t].t} · 문장 씨앗 칩을 누르면 칸에 들어가요. 내 말로 바꿔 쓴 뒤 4단계를 채우고 조립하세요.</p>`+WS.map((x,i)=>`<div class="fld" style="margin:12px 0"><h3>${i+1}단계 · ${x[0]}</h3><p class="q">${x[1]}</p><div class="bar">${WZ[t][i].map((c,j)=>`<button data-sd="${i}.${j}">예시 ${j+1} 보기</button>`).join("")}</div><div class="hint nocopy" id="sdv${i}" hidden></div><textarea style="min-height:90px" data-w="${i}" aria-label="${x[0]}" placeholder="한두 문장">${esc(v[i]||"")}</textarea><div class="msg" id="wm${i}" style="color:var(--bad)"></div></div>`).join("")+`<div class="row"><button class="btn pri" id="asm">글 조립하기</button><span class="msg" id="am"></span></div></div>`}
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset.w!==undefined){const a=st.wz[st.topic]=st.wz[st.topic]||["","","",""];a[+t.dataset.w]=t.value;save();wchk(+t.dataset.w)}});
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset.sd){const[i,j]=t.dataset.sd.split(".").map(Number),v=$("#sdv"+i);v.hidden=false;v.textContent="💡 예시: "+WZ[st.topic][i][j]+"  (복사할 수 없어요. 아이디어만 참고해서 내 말과 내 장면으로 써 보세요.)"}
+ if(t.id==="asm"){const a=(st.wz[st.topic]||[]).map(x=>(x||"").trim()).filter(Boolean),m=$("#am");
+  if([0,1,2,3].map(wchk).some(Boolean)){m.textContent="예시·힌트와 같은 문장이 있는 단계를 내 표현으로 고쳐 쓴 뒤 조립하세요.";return}
+  if(a.length<4){m.textContent="4단계를 모두 써야 조립할 수 있어요. ("+a.length+"/4)";return}
+  if((st.a.q3||"").trim()&&!asmOk){asmOk=true;m.textContent="이미 쓴 글이 있어요. 한 번 더 누르면 덮어써요.";return}
+  asmOk=false;const ta=$("#t-q3");ta.value=a.join(" ");ta.dispatchEvent(new Event("input",{bubbles:true}));m.textContent="아래 의견 칸에 조립했어요. 왜냐하면·따라서·즉 같은 접속어로 문장을 이어 다듬어 보세요.";ta.scrollIntoView({block:"center"})}});
+const strip=x=>norm(x).replace(/[.,~?!’‘“”"'()·]/g,"");
+function dup(text,srcs){const A=strip(text);if(A.length<10)return false;return srcs.some(x=>{const S=strip(x);for(let i=0;i+10<=S.length;i++)if(A.includes(S.slice(i,i+10)))return true;return false})}
+function copied(){return dup(st.a.q3||"",[...T[st.topic].h,...WZ[st.topic].flat()])}
+function wchk(i){const t=st.topic,el=$("#wm"+i);if(!el)return false;const bad=dup((st.wz[t]||[])[i]||"",[...WZ[t][i],...T[t].h]);el.textContent=bad?"예시·힌트와 같은 문장이 있어요. 내 표현과 내 장면으로 고쳐 써 보세요.":"";return bad}
+["paste","drop"].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target;if(t.dataset&&(t.dataset.w!==undefined||t.id==="t-q3")){e.preventDefault();const m=t.id==="t-q3"?$("#fb-q3"):$("#wm"+t.dataset.w);if(m)m.textContent="붙여넣기는 막혀 있어요. 내 생각을 직접 써 보세요."}}));
+const MATHIDS=["q2a","q2b"];
+const MK=[["x","x"],["y","y"],["z","z"],["r","r"],["k","k"],["x²","x²"],["y²","y²"],["z²","z²"],["r²","r²"],["k²","k²"],["SP"],
+["√( )","√()",1],["| |","||",1],["( )","()",1],["²","²"],["³","³"],["±","±"],["π","π"],["SP"],
+["+","+"],["−","−"],["×","×"],["÷","÷"],["=","="],["≠","≠"],["<","<"],[">",">"],["≤","≤"],["≥","≥"],["SP"],
+["r²−k²","r²−k²"],["x²+y²","x²+y²"],["z=k","z=k"],["∴","∴"],["∵","∵"],["⇒","⇒"],["/","/"],["⌫","BS"],["◀","L"],["▶","R"]];
+const MT=id=>MATHIDS.includes(id)?`<button type="button" class="btn pri" data-mt="${id}" aria-expanded="false">🧮 공학용 키보드</button>`:"";
+const MP=id=>MATHIDS.includes(id)?`<div class="mk" id="mk-${id}" hidden aria-label="수식 기호 키보드">${MK.map((k,i)=>k[0]==="SP"?'<span class="sp"></span>':`<button type="button" data-mk="${id}.${i}" aria-label="${k[0]}">${k[0]}</button>`).join("")}</div>`:"";
+document.addEventListener("mousedown",e=>{if(e.target.closest&&e.target.closest(".mk"))e.preventDefault()});
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset&&t.dataset.mt){const p=$("#mk-"+t.dataset.mt);p.hidden=!p.hidden;t.setAttribute("aria-expanded",String(!p.hidden));if(!p.hidden)$("#t-"+t.dataset.mt).focus()}
+ if(t.dataset&&t.dataset.mk){const[id,i]=t.dataset.mk.split("."),k=MK[+i],ta=$("#t-"+id);let a=ta.selectionStart,b=ta.selectionEnd,v=ta.value;
+  if(k[1]==="L"||k[1]==="R"){const c=Math.max(0,Math.min(v.length,(k[1]==="L"?a:b)+(k[1]==="L"?-1:1)));ta.selectionStart=ta.selectionEnd=c}else if(k[1]==="BS"){if(a===b&&a>0)a--;ta.value=v.slice(0,a)+v.slice(b);ta.selectionStart=ta.selectionEnd=a}
+  else{const mid=k[2]&&a!==b?v.slice(a,b):"",ins=k[2]&&mid?k[1].slice(0,k[1].length-k[2])+mid+k[1].slice(k[1].length-k[2]):k[1];ta.value=v.slice(0,a)+ins+v.slice(b);ta.selectionStart=ta.selectionEnd=a+ins.length-(k[2]&&!mid?k[2]:0)}
+  ta.focus();ta.dispatchEvent(new Event("input",{bubbles:true}))}});
+document.addEventListener("change",e=>{if(e.target.classList&&e.target.classList.contains("ck"))ckCount()});
+back();render();renderSess();setInterval(tick,1000);
+</script>
+</body>
+</html>
